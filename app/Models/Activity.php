@@ -32,6 +32,13 @@ class Activity extends SpatieActivity
 {
     use HasFactory;
 
+    public function causerInfo(): Attribute
+    {
+        return Attribute::make(
+            get: fn() => $this->causer->full_name ?? 'System'
+        );
+    }
+
     public function subjectInfo(): Attribute
     {
         return Attribute::make(
