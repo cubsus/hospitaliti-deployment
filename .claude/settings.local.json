@@ -24,7 +24,11 @@
       "Bash(php artisan make:test:*)",
       "Bash(php artisan test:*)",
       "Bash(php artisan make:filament-theme:*)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "mcp__laravel-boost__database-schema",
+      "Bash(php artisan:*)",
+      "mcp__laravel-boost__database-query",
+      "Bash(find:*)"
     ]
   },
   "enableAllProjectMcpServers": true,
