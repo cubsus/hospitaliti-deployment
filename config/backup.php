@@ -16,6 +16,7 @@ return [
                  */
                 'include' => [
                     base_path(),
+                    storage_path(),
                 ],
 
                 /*
@@ -151,7 +152,7 @@ return [
              * The disk names on which the backups will be stored.
              */
             'disks' => [
-                'local',
+                's3',
             ],
         ],
 
@@ -211,11 +212,11 @@ return [
         'notifiable' => \Spatie\Backup\Notifications\Notifiable::class,
 
         'mail' => [
-            'to' => 'your@example.com',
+            'to' => 'feraandrei1@gmail.com',
 
             'from' => [
-                'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
-                'name' => env('MAIL_FROM_NAME', 'Example'),
+                'address' => env('MAIL_FROM_ADDRESS', 'no-reply@hospitaliti-deployment.com'),
+                'name' => env('MAIL_FROM_NAME', 'Hospitaliti Deployment'),
             ],
         ],
 
