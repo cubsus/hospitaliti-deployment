@@ -44,8 +44,11 @@
     // ============================================================================
     // CI/CD Status Check - Prevents deployment if tests are failing
     // ============================================================================
+    // Extract repository owner/name from the Git URL (e.g., git@github.com:owner/repo.git -> owner/repo)
+    $repoPath = preg_replace('/^.*[:\\/]([^\\/]+\\/[^\\/]+?)(?:\\.git)?$/', '$1', $repository);
+
     // Get the latest CI run from GitHub Actions for the main branch
-    $ciRun = trim(shell_exec('gh run list --branch main --limit 1 --json conclusion,headSha,displayTitle'));
+    $ciRun = trim(shell_exec('gh run list --repo ' . escapeshellarg($repoPath) . ' --branch main --limit 1 --json conclusion,headSha,displayTitle'));
 
     // Check if we got any CI runs
     if (empty($ciRun)) {
