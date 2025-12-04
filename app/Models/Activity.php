@@ -35,7 +35,7 @@ class Activity extends SpatieActivity
     public function causerInfo(): Attribute
     {
         return Attribute::make(
-            get: fn() => $this->causer->full_name ?? 'System'
+            get: fn() => $this->causer->name ?? 'System'
         );
     }
 
