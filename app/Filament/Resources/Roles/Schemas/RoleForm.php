@@ -5,9 +5,9 @@ namespace App\Filament\Resources\Roles\Schemas;
 use Filament\Schemas\Schema;
 use Filament\Schemas;
 use Filament\Forms;
-use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class RoleForm
 {

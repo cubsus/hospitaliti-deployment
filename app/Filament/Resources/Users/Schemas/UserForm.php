@@ -3,11 +3,11 @@
 namespace App\Filament\Resources\Users\Schemas;
 
 use App\Filament\Helpers\Resources\SearchOptionLimit;
+use Filament\Resources\Pages\CreateRecord;
+use Filament\Resources\Pages\Page;
 use Filament\Schemas\Schema;
 use Filament\Schemas;
 use Filament\Forms;
-use Filament\Resources\Pages\CreateRecord;
-use Filament\Resources\Pages\Page;
 use Illuminate\Support\Facades\Hash;
 
 class UserForm
@@ -43,17 +43,17 @@ class UserForm
                                 Forms\Components\TextInput::make('password')
                                     ->password()
                                     ->revealable()
-                                    ->required(fn(Page $livewire): bool => $livewire instanceof CreateRecord)
+                                    ->required(fn (Page $livewire): bool => $livewire instanceof CreateRecord)
                                     ->minLength(8)->same('passwordConfirmation')
-                                    ->dehydrated(fn($state) => filled($state))
-                                    ->dehydrateStateUsing(fn($state) => Hash::make($state))
+                                    ->dehydrated(fn ($state) => filled($state))
+                                    ->dehydrateStateUsing(fn ($state) => Hash::make($state))
                                     ->translateLabel(),
 
                                 Forms\Components\TextInput::make('passwordConfirmation')
                                     ->password()
                                     ->revealable()
                                     ->label('Password confirmation')
-                                    ->required(fn(Page $livewire): bool => $livewire instanceof CreateRecord)
+                                    ->required(fn (Page $livewire): bool => $livewire instanceof CreateRecord)
                                     ->minLength(8)
                                     ->dehydrated(false)
                                     ->translateLabel(),

@@ -2,13 +2,13 @@
 
 namespace App\Filament\Resources\Activities;
 
-use App\Filament\Resources\Activities\Pages\ListActivities;
 use App\Filament\Resources\Activities\Tables\ActivitiesTable;
+use App\Filament\Resources\Activities\Pages\ListActivities;
 use App\Models\Activity;
 use BackedEnum;
+use Filament\Support\Icons\Heroicon;
 use Filament\Resources\Resource;
 use Filament\Tables\Table;
-use Filament\Support\Icons\Heroicon;
 
 class ActivityResource extends Resource
 {

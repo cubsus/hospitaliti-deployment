@@ -2,15 +2,15 @@
 
 namespace App\Filament\Resources\Activities\Tables;
 
-use App\Filament\Helpers\Resources\PaginationValues;
 use App\Filament\Helpers\Resources\SearchOptionLimit;
+use App\Filament\Helpers\Resources\PaginationValues;
+use App\Models\Activity;
+use App\Models\User;
+use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Table;
 use Filament\Tables;
 use Filament\Forms;
 use Illuminate\Database\Eloquent\Builder;
-use App\Models\Activity;
-use App\Models\User;
-use Filament\Tables\Enums\FiltersLayout;
 
 class ActivitiesTable
 {
@@ -34,7 +34,7 @@ class ActivitiesTable
 
                 Tables\Columns\TextColumn::make('description')
                     ->badge()
-                    ->color(fn(string $state): string => match ($state) {
+                    ->color(fn (string $state): string => match ($state) {
                         'created' => 'success',
                         'updated' => 'warning',
                         'deleted' => 'danger',
@@ -60,24 +60,24 @@ class ActivitiesTable
                     ])
                     ->columnSpan(2)
                     ->columns(2)
-                    ->query(fn(Builder $query, array $data): Builder => $query
+                    ->query(fn (Builder $query, array $data): Builder => $query
                         ->when(
                             $data['created_from'],
-                            fn(Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                            fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
                         )
                         ->when(
                             $data['created_until'],
-                            fn(Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                            fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
                         )),
 
                 Tables\Filters\SelectFilter::make('causer_id')
-                    ->options(User::all()->mapWithKeys(fn($user) => [$user->id => $user->full_name ?? $user->email]))
+                    ->options(User::all()->mapWithKeys(fn ($user) => [$user->id => $user->full_name ?? $user->email]))
                     ->query(function (Builder $query, array $data): Builder {
                         $causerId = $data['value'] ?? null;
 
                         return $query->when(
                             $causerId,
-                            fn(): Builder => $query->whereHasMorph(
+                            fn (): Builder => $query->whereHasMorph(
                                 'causer',
                                 [User::class],
                                 function (Builder $query) use ($causerId): void {
@@ -102,7 +102,7 @@ class ActivitiesTable
 
                         return $query->when(
                             $subjectType,
-                            fn(Builder $subQuery): Builder => $subQuery->where('subject_type', $subjectType)
+                            fn (Builder $subQuery): Builder => $subQuery->where('subject_type', $subjectType)
                         );
                     })
                     ->label('Subject type')
