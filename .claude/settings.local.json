@@ -1,7 +1,18 @@
 {
+  "permissions": {
+    "allow": [
+      "mcp__laravel-boost__application-info",
+      "Bash(composer require:*)",
+      "Bash(php artisan filament:install:*)",
+      "Bash(php artisan vendor:publish:*)",
+      "Bash(php artisan migrate:*)",
+      "Bash(php artisan make:filament-user:*)",
+      "Bash(vendor/bin/pint:*)"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
     "laravel-boost",
     "herd"
-  ],
-  "enableAllProjectMcpServers": true
+  ]
 }
