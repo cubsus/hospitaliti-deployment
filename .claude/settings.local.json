@@ -22,7 +22,9 @@
       "mcp__laravel-boost__tinker",
       "Bash(php artisan route:list:*)",
       "Bash(php artisan make:test:*)",
-      "Bash(php artisan test:*)"
+      "Bash(php artisan test:*)",
+      "Bash(php artisan make:filament-theme:*)",
+      "Bash(npm run build:*)"
     ]
   },
   "enableAllProjectMcpServers": true,

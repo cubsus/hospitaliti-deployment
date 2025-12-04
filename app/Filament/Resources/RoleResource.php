@@ -62,7 +62,7 @@ class RoleResource extends Resource
                         ->searchDebounce(500)
                         ->columns(4)
                         ->translateLabel(),
-                ]),
+                ])->columnSpanFull(),
             ]);
     }
 
