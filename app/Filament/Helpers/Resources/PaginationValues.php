@@ -9,7 +9,7 @@ class PaginationValues
         return [
             10,
             25,
-            50
+            50,
         ];
     }
 }

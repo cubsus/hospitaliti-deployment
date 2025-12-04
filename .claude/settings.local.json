@@ -7,7 +7,22 @@
       "Bash(php artisan vendor:publish:*)",
       "Bash(php artisan migrate:*)",
       "Bash(php artisan make:filament-user:*)",
-      "Bash(vendor/bin/pint:*)"
+      "Bash(vendor/bin/pint:*)",
+      "mcp__laravel-boost__search-docs",
+      "Bash(mcp__laravel-boost__search-docs)",
+      "WebSearch",
+      "WebFetch(domain:filamentphp.com)",
+      "mcp__herd__get_site_information",
+      "mcp__laravel-boost__last-error",
+      "mcp__laravel-boost__browser-logs",
+      "mcp__laravel-boost__get-absolute-url",
+      "mcp__laravel-boost__list-routes",
+      "Bash(php artisan optimize:clear:*)",
+      "Bash(php artisan tinker:*)",
+      "mcp__laravel-boost__tinker",
+      "Bash(php artisan route:list:*)",
+      "Bash(php artisan make:test:*)",
+      "Bash(php artisan test:*)"
     ]
   },
   "enableAllProjectMcpServers": true,
