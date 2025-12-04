@@ -23,6 +23,6 @@ class HealthCheckResults extends BaseHealthCheckResults
 
     public static function getNavigationSort(): int
     {
-        return 11;
+        return 3;
     }
 }

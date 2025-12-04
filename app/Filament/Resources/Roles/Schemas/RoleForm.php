@@ -1,30 +1,17 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Resources\Roles\Schemas;
 
-use App\Filament\Helpers\Resources\PaginationValues;
-use App\Filament\Resources\RoleResource\Pages;
-use App\Models\Role;
-use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Tables;
-use Filament\Tables\Table;
+use Filament\Schemas;
+use Filament\Forms;
+use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
-use Filament\Forms;
-use Filament\Schemas;
-use BackedEnum;
 
-class RoleResource extends Resource
+class RoleForm
 {
-    protected static ?string $model = Role::class;
-
-    protected static ?int $navigationSort = 12;
-
-    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-shield-check';
-
-    public static function form(Schema $schema): Schema
+    public static function configure(Schema $schema): Schema
     {
         return $schema
             ->components([
@@ -64,46 +51,5 @@ class RoleResource extends Resource
                         ->translateLabel(),
                 ])->columnSpanFull(),
             ]);
-    }
-
-    public static function table(Table $table): Table
-    {
-        return $table
-            ->columns([
-                Tables\Columns\TextColumn::make('name')
-                    ->searchable()
-                    ->translateLabel(),
-            ])
-            ->paginated(PaginationValues::getPaginationValues());
-    }
-
-    public static function getPages(): array
-    {
-        return [
-            'index' => Pages\ListRoles::route('/'),
-            'create' => Pages\CreateRole::route('/create'),
-            'edit' => Pages\EditRole::route('/{record}/edit'),
-        ];
-    }
-
-    public static function getModelLabel(): string
-    {
-        return __('Role');
-    }
-
-    public static function getPluralModelLabel(): string
-    {
-        return __('Roles');
-    }
-
-    public static function getNavigationGroup(): string
-    {
-        return __('Settings');
-    }
-
-    public static function getEloquentQuery(): Builder
-    {
-        return parent::getEloquentQuery()
-            ->where('name', '!=', 'Super Admin');
     }
 }

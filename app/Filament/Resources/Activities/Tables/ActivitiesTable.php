@@ -1,30 +1,19 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Resources\Activities\Tables;
 
 use App\Filament\Helpers\Resources\PaginationValues;
 use App\Filament\Helpers\Resources\SearchOptionLimit;
-use App\Filament\Resources\ActivityResource\Pages;
+use Filament\Tables\Table;
+use Filament\Tables;
+use Filament\Forms;
+use Illuminate\Database\Eloquent\Builder;
 use App\Models\Activity;
 use App\Models\User;
-use Filament\Resources\Resource;
-use Filament\Schemas\Components;
-use Filament\Tables;
 use Filament\Tables\Enums\FiltersLayout;
-use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Filament\Forms;
-use Filament\Schemas;
-use BackedEnum;
 
-class ActivityResource extends Resource
+class ActivitiesTable
 {
-    protected static ?string $model = Activity::class;
-
-    protected static ?int $navigationSort = 13;
-
-    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-finger-print';
-
     public static function showLast(Builder $query): Builder
     {
         $query = $query->orderBy('created_at', 'desc');
@@ -32,7 +21,7 @@ class ActivityResource extends Resource
         return $query;
     }
 
-    public static function table(Table $table): Table
+    public static function configure(Table $table): Table
     {
         return $table
             ->query(
@@ -122,27 +111,5 @@ class ActivityResource extends Resource
             ], layout: FiltersLayout::AboveContent)
             ->filtersFormColumns(4)
             ->paginated(PaginationValues::getPaginationValues());
-    }
-
-    public static function getPages(): array
-    {
-        return [
-            'index' => Pages\ListActivities::route('/'),
-        ];
-    }
-
-    public static function getModelLabel(): string
-    {
-        return __('Activity');
-    }
-
-    public static function getPluralModelLabel(): string
-    {
-        return __('Activities');
-    }
-
-    public static function getNavigationGroup(): string
-    {
-        return __('Settings');
     }
 }
