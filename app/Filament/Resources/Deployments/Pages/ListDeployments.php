@@ -3,7 +3,9 @@
 namespace App\Filament\Resources\Deployments\Pages;
 
 use App\Filament\Resources\Deployments\DeploymentResource;
+use App\Enums\DeploymentStatusEnum;
 use App\Models\Deployment;
+
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Notifications\Notification;
@@ -19,9 +21,8 @@ class ListDeployments extends ListRecords
         return [
 
             Actions\Action::make('trigger_deployment')
+                ->disabled(fn (): bool => Deployment::where('status', DeploymentStatusEnum::RUNNING->value)->exists())
                 ->label('Trigger Deployment')
-                ->icon('heroicon-o-rocket-launch')
-                ->color('success')
                 ->requiresConfirmation()
                 ->modalHeading('Trigger New Deployment')
                 ->modalDescription('Are you sure you want to trigger a new deployment? This will run the deployment process.')
@@ -29,9 +30,15 @@ class ListDeployments extends ListRecords
                 ->action(function () {
                     $deployment = Deployment::create([
                         'user_id' => Auth::id(),
-                        'status' => 'running',
+                        'status' => DeploymentStatusEnum::RUNNING->value,
                         'started_at' => now(),
                     ]);
+
+                    Notification::make()
+                        ->title('Deployment queued')
+                        ->success()
+                        ->body('The deployment has been queued.')
+                        ->send();
 
                     try {
                         Artisan::call('app:deploy-main-project');
@@ -39,7 +46,7 @@ class ListDeployments extends ListRecords
                         $output = Artisan::output();
 
                         $deployment->update([
-                            'status' => 'completed',
+                            'status' => DeploymentStatusEnum::COMPLETED->value,
                             'completed_at' => now(),
                             'output' => $output,
                             'exit_code' => 0,
@@ -49,10 +56,10 @@ class ListDeployments extends ListRecords
                             ->title('Deployment Completed')
                             ->success()
                             ->body('The deployment has been completed successfully.')
-                            ->send();
+                            ->toDatabase();
                     } catch (\Exception $e) {
                         $deployment->update([
-                            'status' => 'failed',
+                            'status' => DeploymentStatusEnum::FAILED->value,
                             'completed_at' => now(),
                             'error_output' => $e->getMessage(),
                             'exit_code' => 1,
@@ -62,7 +69,7 @@ class ListDeployments extends ListRecords
                             ->title('Deployment Failed')
                             ->danger()
                             ->body('The deployment has failed: ' . $e->getMessage())
-                            ->send();
+                            ->toDatabase();
                     }
                 }),
         ];

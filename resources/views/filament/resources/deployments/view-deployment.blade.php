@@ -5,7 +5,6 @@
             <p class="mt-1">
                 <span @class([
                     'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
-                    'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' => $deployment->status === 'pending',
                     'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' => $deployment->status === 'running',
                     'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' => $deployment->status === 'completed',
                     'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200' => $deployment->status === 'failed',
@@ -18,14 +17,14 @@
         <div>
             <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300">User</h3>
             <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">
-                {{ $deployment->user?->name ?? 'System' }}
+                {{ $deployment->user->name }}
             </p>
         </div>
 
         <div>
-            <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300">Started At</h3>
+            <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300">Created At</h3>
             <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">
-                {{ $deployment->started_at?->format('Y-m-d H:i:s') ?? 'N/A' }}
+                {{ $deployment->created_at?->format('Y-m-d H:i:s') ?? 'N/A' }}
             </p>
         </div>
 
@@ -53,8 +52,8 @@
         <div>
             <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300">Duration</h3>
             <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">
-                @if($deployment->started_at && $deployment->completed_at)
-                    {{ $deployment->started_at->diffForHumans($deployment->completed_at, true) }}
+                @if($deployment->created_at && $deployment->completed_at)
+                    {{ $deployment->created_at->diffForHumans($deployment->completed_at, true) }}
                 @else
                     N/A
                 @endif

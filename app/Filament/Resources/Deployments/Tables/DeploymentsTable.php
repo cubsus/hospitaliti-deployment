@@ -3,10 +3,14 @@
 namespace App\Filament\Resources\Deployments\Tables;
 
 use App\Filament\Helpers\Resources\PaginationValues;
+use App\Enums\DeploymentStatusEnum;
 use App\Models\Deployment;
+
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Actions;
+
 use Illuminate\Database\Eloquent\Builder;
 
 class DeploymentsTable
@@ -29,17 +33,15 @@ class DeploymentsTable
 
                 Tables\Columns\TextColumn::make('user.name')
                     ->label('User')
-                    ->searchable()
-                    ->default('System'),
+                    ->searchable(),
 
                 Tables\Columns\TextColumn::make('status')
                     ->label('Status')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
-                        'pending' => 'warning',
-                        'running' => 'info',
-                        'completed' => 'success',
-                        'failed' => 'danger',
+                        DeploymentStatusEnum::RUNNING->value => 'info',
+                        DeploymentStatusEnum::COMPLETED->value => 'success',
+                        DeploymentStatusEnum::FAILED->value => 'danger',
                         default => 'gray',
                     }),
 
@@ -62,12 +64,16 @@ class DeploymentsTable
             ])
             ->recordActions([
                 Actions\Action::make('view')
+                    ->icon(Heroicon::Eye)
+                    ->color('gray')
                     ->modalHeading('Deployment Details')
                     ->modalContent(function (Deployment $record) {
                         return view('filament.resources.deployments.view-deployment', [
                             'deployment' => $record,
                         ]);
-                    }),
+                    })
+                    ->modalSubmitAction(false)
+                    ->modalCancelAction(false),
             ])
             ->defaultSort('created_at', 'desc')
             ->paginated(PaginationValues::getPaginationValues());
