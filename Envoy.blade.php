@@ -25,7 +25,7 @@
         $dotenv->required(['DEPLOY_RELEASE_DIR'])->notEmpty(); // Directory where releases are stored
         $dotenv->required(['DEPLOY_APP_DIR'])->notEmpty();    // Main application directory
     } catch ( Exception $e )  {
-        echo $e->getMessage(); exit;
+        echo $e->getMessage(); exit(1);
     }
 
     // Define constants for SSH connection
@@ -53,14 +53,14 @@
     // Check if we got any CI runs
     if (empty($ciRun)) {
         echo "No CI runs found for main branch.\n";
-        exit;
+        exit(1);
     }
 
     // Parse the JSON response from GitHub CLI
     $ciData = json_decode($ciRun, true);
     if (json_last_error() !== JSON_ERROR_NONE || empty($ciData)) {
         echo "Failed to parse CI data.\n";
-        exit;
+        exit(1);
     }
 
     // Extract the latest run information
@@ -72,7 +72,7 @@
         echo "Last commit did not succeed in tests.\n";
         echo "Commit: " . ($latestRun['displayTitle'] ?? 'unknown') . "\n";
         echo "CI Status: " . $ciStatus . "\n";
-        exit;
+        exit(1);
     }
 
     // Store the commit hash from the successful CI run for deployment
