@@ -46,6 +46,9 @@ class DeployPrimaryProjectJob implements ShouldQueue
             return;
         }
 
+        // Set activity log causer for deployment operations
+        Deployment::setActivityCauser($this->authUser->id);
+
         // Create a new deployment record
         $deployment = Deployment::create([
             'user_id' => $this->authUser->id,
@@ -79,6 +82,8 @@ class DeployPrimaryProjectJob implements ShouldQueue
                 'error_output' => $error,
             ]);
         });
+
+        Deployment::setActivityCauser(null);
 
         // Update deployment record based on process result
         if ($process->isSuccessful()) {
@@ -121,6 +126,9 @@ class DeployPrimaryProjectJob implements ShouldQueue
     public function failed(?Throwable $exception): void
     {
         if ($this->deploymentId) {
+
+            // Set activity log causer for deployment operations
+            Deployment::setActivityCauser(null);
 
             $deployment = Deployment::find($this->deploymentId);
 
