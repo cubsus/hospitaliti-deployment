@@ -7,9 +7,9 @@ use App\Enums\DeploymentStatusEnum;
 use App\Models\Deployment;
 
 use Filament\Support\Icons\Heroicon;
-use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Actions;
+use Filament\Tables;
 
 use Illuminate\Database\Eloquent\Builder;
 

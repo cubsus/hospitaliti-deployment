@@ -3,14 +3,13 @@
 namespace App\Filament\Resources\Deployments\Pages;
 
 use App\Filament\Resources\Deployments\DeploymentResource;
+use App\Jobs\DeployPrimaryProjectJob;
 use App\Enums\DeploymentStatusEnum;
 use App\Models\Deployment;
 
-use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Notifications\Notification;
-use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Auth;
+use Filament\Actions;
 
 class ListDeployments extends ListRecords
 {
@@ -28,49 +27,14 @@ class ListDeployments extends ListRecords
                 ->modalDescription('Are you sure you want to trigger a new deployment? This will run the deployment process.')
                 ->modalSubmitActionLabel('Yes, Deploy')
                 ->action(function () {
-                    $deployment = Deployment::create([
-                        'user_id' => Auth::id(),
-                        'status' => DeploymentStatusEnum::RUNNING->value,
-                        'started_at' => now(),
-                    ]);
+
+                    DeployPrimaryProjectJob::dispatch();
 
                     Notification::make()
                         ->title('Deployment queued')
                         ->success()
                         ->body('The deployment has been queued.')
                         ->send();
-
-                    try {
-                        Artisan::call('app:deploy-main-project');
-
-                        $output = Artisan::output();
-
-                        $deployment->update([
-                            'status' => DeploymentStatusEnum::COMPLETED->value,
-                            'completed_at' => now(),
-                            'output' => $output,
-                            'exit_code' => 0,
-                        ]);
-
-                        Notification::make()
-                            ->title('Deployment Completed')
-                            ->success()
-                            ->body('The deployment has been completed successfully.')
-                            ->toDatabase();
-                    } catch (\Exception $e) {
-                        $deployment->update([
-                            'status' => DeploymentStatusEnum::FAILED->value,
-                            'completed_at' => now(),
-                            'error_output' => $e->getMessage(),
-                            'exit_code' => 1,
-                        ]);
-
-                        Notification::make()
-                            ->title('Deployment Failed')
-                            ->danger()
-                            ->body('The deployment has failed: ' . $e->getMessage())
-                            ->toDatabase();
-                    }
                 }),
         ];
     }
