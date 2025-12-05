@@ -11,9 +11,13 @@ use Filament\Resources\Pages\ListRecords;
 use Filament\Notifications\Notification;
 use Filament\Actions;
 
+use Illuminate\Support\Facades\Auth;
+
 class ListDeployments extends ListRecords
 {
     protected static string $resource = DeploymentResource::class;
+
+    protected static ?string $pollingInterval = '5s';
 
     protected function getHeaderActions(): array
     {
@@ -28,7 +32,7 @@ class ListDeployments extends ListRecords
                 ->modalSubmitActionLabel('Yes, Deploy')
                 ->action(function () {
 
-                    DeployPrimaryProjectJob::dispatch();
+                    DeployPrimaryProjectJob::dispatch(Auth::id());
 
                     Notification::make()
                         ->title('Deployment queued')

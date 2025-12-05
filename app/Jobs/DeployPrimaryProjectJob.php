@@ -4,37 +4,57 @@ namespace App\Jobs;
 
 use App\Enums\DeploymentStatusEnum;
 use App\Models\Deployment;
-
+use Filament\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
-use Illuminate\Support\Facades\Auth;
-
-use Filament\Notifications\Notification;
 use Symfony\Component\Process\Process;
+use Throwable;
 
 class DeployPrimaryProjectJob implements ShouldQueue
 {
     use Queueable;
 
+    public int $timeout = 1800;
+
+    public int $tries = 1;
+
+    public ?int $deploymentId = null;
+
     /**
      * Create a new job instance.
      */
-    public function __construct()
-    {
-        //
-    }
+    public function __construct(public int $userId) {}
 
     /**
      * Execute the job.
      */
     public function handle(): void
     {
+        // Check for existing running deployment
+        $existingDeployment = Deployment::where('status', DeploymentStatusEnum::RUNNING->value)->exists();
+
+        if ($existingDeployment) {
+
+            Notification::make()
+                ->title('Deployment Already Running')
+                ->warning()
+                ->body('A deployment is already in progress. Please wait for it to complete before starting a new one.')
+                ->toDatabase();
+
+            return;
+        }
+
+        // Create a new deployment record
         $deployment = Deployment::create([
-            'user_id' => Auth::id(),
+            'user_id' => $this->userId,
             'status' => DeploymentStatusEnum::RUNNING->value,
             'started_at' => now(),
         ]);
 
+        // Store deployment ID for failure handling
+        $this->deploymentId = $deployment->id;
+
+        // Run the deployment command using Symfony Process
         $deploy_command = 'php vendor/bin/envoy run deploy';
 
         $process = Process::fromShellCommandline($deploy_command, base_path());
@@ -45,6 +65,7 @@ class DeployPrimaryProjectJob implements ShouldQueue
         $output = $process->getOutput();
         $error = $process->getErrorOutput();
 
+        // Update deployment record based on process result
         if ($process->isSuccessful()) {
             $deployment->update([
                 'status' => DeploymentStatusEnum::COMPLETED->value,
@@ -71,8 +92,35 @@ class DeployPrimaryProjectJob implements ShouldQueue
             Notification::make()
                 ->title('Deployment Failed')
                 ->danger()
-                ->body('The deployment has failed: ' . $error)
+                ->body('The deployment has failed: '.$error)
                 ->toDatabase();
+        }
+    }
+
+    /**
+     * Handle a job failure.
+     */
+    public function failed(?Throwable $exception): void
+    {
+        if ($this->deploymentId) {
+
+            $deployment = Deployment::find($this->deploymentId);
+
+            if ($deployment) {
+
+                $deployment->update([
+                    'status' => DeploymentStatusEnum::FAILED->value,
+                    'completed_at' => now(),
+                    'error_output' => $exception?->getMessage() ?? 'Job failed unexpectedly',
+                    'exit_code' => 1,
+                ]);
+
+                Notification::make()
+                    ->title('Deployment Failed')
+                    ->danger()
+                    ->body('The deployment job failed: '.($exception?->getMessage() ?? 'Unknown error'))
+                    ->toDatabase();
+            }
         }
     }
 }
