@@ -47,7 +47,7 @@ class AppPanelProvider extends PanelProvider
                 AccountWidget::class,
             ])
             ->databaseNotifications()
-            ->databaseNotificationsPolling('15s')
+            ->databaseNotificationsPolling('5s')
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,

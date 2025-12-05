@@ -17,8 +17,6 @@ class ListDeployments extends ListRecords
 {
     protected static string $resource = DeploymentResource::class;
 
-    protected static ?string $pollingInterval = '5s';
-
     protected function getHeaderActions(): array
     {
         return [
@@ -32,7 +30,9 @@ class ListDeployments extends ListRecords
                 ->modalSubmitActionLabel('Yes, Deploy')
                 ->action(function () {
 
-                    DeployPrimaryProjectJob::dispatch(Auth::id());
+                    DeployPrimaryProjectJob::dispatch(
+                        authUser: Auth::user()
+                    );
 
                     Notification::make()
                         ->title('Deployment queued')

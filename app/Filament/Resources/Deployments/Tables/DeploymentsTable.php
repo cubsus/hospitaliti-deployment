@@ -26,6 +26,7 @@ class DeploymentsTable
             ->query(
                 static::showLast(Deployment::query())
             )
+            ->poll('5s')
             ->columns([
                 Tables\Columns\TextColumn::make('id')
                     ->label('ID')
