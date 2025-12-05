@@ -5,11 +5,10 @@ namespace App\Jobs;
 use App\Enums\DeploymentStatusEnum;
 use App\Models\Deployment;
 use App\Models\User;
-
 use Filament\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
-
+use Illuminate\Support\Facades\File;
 use Symfony\Component\Process\Process;
 use Throwable;
 
@@ -111,6 +110,9 @@ class DeployPrimaryProjectJob implements ShouldQueue
                 ->body('The deployment has failed: ' . $error)
                 ->sendToDatabase($this->authUser);
         }
+
+        // Clean up temporary Envoy files
+        $this->cleanupEnvoyFiles();
     }
 
     /**
@@ -136,6 +138,26 @@ class DeployPrimaryProjectJob implements ShouldQueue
                     ->danger()
                     ->body('The deployment job failed: ' . ($exception?->getMessage() ?? 'Unknown error'))
                     ->sendToDatabase($this->authUser);
+            }
+        }
+
+        // Clean up temporary Envoy files even on job failure
+        $this->cleanupEnvoyFiles();
+    }
+
+    /**
+     * Clean up temporary Envoy compiled files.
+     */
+    protected function cleanupEnvoyFiles(): void
+    {
+        $basePath = base_path();
+        $envoyFiles = File::glob($basePath . '/Envoy*.php');
+
+        foreach ($envoyFiles as $file) {
+
+            // Only delete compiled Envoy files (not Envoy.blade.php)
+            if (basename($file) !== 'Envoy.blade.php' && str_starts_with(basename($file), 'Envoy')) {
+                File::delete($file);
             }
         }
     }
